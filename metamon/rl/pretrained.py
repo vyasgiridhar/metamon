@@ -206,6 +206,16 @@ class PretrainedModel:
             [self.model_gin_config_path, self.train_gin_config_path],
             finalize=False,
         )
+        # Fall back to VanillaAttention on non-CUDA machines (e.g. macOS/ANE)
+        try:
+            import flash_attn  # noqa: F401
+        except ImportError:
+            from amago.nets.transformer import VanillaAttention
+            import gin as _gin
+            _gin.register(VanillaAttention, module="transformer")
+            _gin.bind_parameter(
+                "traj_encoders.TformerTrajEncoder.attention_type", VanillaAttention
+            )
         checkpoint = checkpoint if checkpoint is not None else self.default_checkpoint
         ckpt_path = self.get_path_to_checkpoint(checkpoint)
         ckpt_base_dir = str(Path(ckpt_path).parents[2])
