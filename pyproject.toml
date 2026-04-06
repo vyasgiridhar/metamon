@@ -45,3 +45,10 @@ Repository = "https://github.com/UT-Austin-RPL/metamon"
 [tool.setuptools.packages.find]
 include = ["metamon*"]
 
+[tool.setuptools.package-data]
+metamon = [
+    "tokenizer/*.json",
+    "rl/configs/**/*.gin",
+    "backend/showdown_dex/static/**/*.json",
+]
+
